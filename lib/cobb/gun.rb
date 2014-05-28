@@ -1,6 +1,12 @@
 # encoding: utf-8
 module Cobb
   class Gun
+    class << self
+      def fire(url)
+        new.fire(url)
+      end
+    end
+    
     def fire(url)
       @url = url
       @victim = Victim.new(self, url)
@@ -35,12 +41,15 @@ module Cobb
     end
 
     def result(hash)
-      #if @current_row
-        #@current_row.merge!(hash)
-      #else
-        @victim.data.merge!(hash)
-      #end
+      @victim.merge_data!(hash)
     end
-
+    
+    def result_row(hash = nil, &block)
+      @victim.row!(hash, &block)
+    end
+    
+    def next_to(gun, url, context = {})
+      @victim.next_order!(gun, url, context)
+    end
   end
 end
