@@ -1,10 +1,19 @@
 # encoding: utf-8
 require 'rubygems'
+require 'naught'
 
 module Cobb
   class << self
+    NaughtLogger = Naught.build{|cfg|
+        cfg.mimic Logger
+    }
+
     def log
-      @log ||= NullLogger.new
+      @log ||= NaughtLogger.new
+    end
+    
+    def gun?(object)
+      object.is_a?(Class) && object < Gun
     end
     
     attr_writer :log
@@ -12,9 +21,11 @@ module Cobb
     def settings
       @settings ||= Mash.new
     end
-
-    def web_client
-      WebClient.instance
+    
+    def guarded_requre(gem)
+      require gem
+    rescue LoadError
+      fail "Can't require optional #{gem}, possibly you should add it to your Gemfile to use"
     end
   end
 end

@@ -1,5 +1,16 @@
 # encoding: utf-8
 module Cobb
+  class FiringError < RuntimeError
+    def FiringError.from(gun, url, exception)
+      new("While firing #{gun.class}(#{url}): #{exception.class} - #{exception.message}").tap{|e|
+        e.set_backtrace(exception.backtrace)
+      }
+    end
+  end
+  
+  class SourceRejected < RuntimeError
+  end
+  
   class Gun
     class << self
       # settings DSL
@@ -9,6 +20,15 @@ module Cobb
       end
       
       alias_method :source, :sources
+      
+      def initial?
+        !sources.empty? && sources.all?{|s| !Cobb.gun?(s)}
+      end
+      
+      def samples(*)
+      end
+      
+      alias_method :sample, :samples
       
       # usage
       def fire(url, context = {})
@@ -23,6 +43,10 @@ module Cobb
         make_orders(options.sources, opts[:context] || {}).
           select{|order| order.gun == self}.
           map(&:perform!)
+      end
+      
+      def web_client
+        @web_client ||= WebClient.new
       end
 
       private
@@ -52,15 +76,31 @@ module Cobb
     def fire(url)
       @url = url
       @victim = Victim.new(self, url)
-      @raw = Cobb.web_client.get(url)
+
+      log.info "Firing #{inspect}"
+      @raw = web_client.get(url)
       
       mechanizm
+
+      log_victim(@victim)
       
       @victim
+    rescue SourceRejected
+      nil
+    rescue => e
+      fail FiringError.from(self, url, e)
     ensure
       @url = nil
       @victim = nil
       @raw = nil
+    end
+    
+    def inspect
+      if url
+        "#<#{self.class.name}(#{url}) with #{context.to_hash.inspect}>"
+      else
+        "#<#{self.class.name} with #{context.to_hash.inspect}>"
+      end
     end
     
     protected
@@ -70,7 +110,27 @@ module Cobb
     end
     
     private
+    
+    def log
+      Cobb.log
+    end
 
+    def log_victim(victim)
+      log.info "...#{inspect} ready"
+      if !victim.data.empty?
+        log.info "...#{inspect} data: #{victim.data.keys.join(', ')}"
+      elsif !victim.datum.empty?
+        log.info "...#{inspect} datum: #{victim.datum.count} rows"
+      end
+      stats = victim.next_orders.group_by(&:gun).map{|g, os| "#{g}: #{os.count}"}
+      unless stats.empty?
+        log.info "...#{inspect} next urls: #{stats.join(', ')}"
+      end
+    end
+    
+    def web_client
+      self.class.web_client
+    end
     # parsing helpers DSL
     
     attr_reader :url, :raw
@@ -80,6 +140,16 @@ module Cobb
       require 'nokogiri'
       require 'nokogiri/more'
       @html ||= Nokogiri::HTML(raw, url)
+    end
+    
+    def json
+      @json ||= from_json(raw)
+    end
+    
+    def from_json(text)
+      Kernel.const_defined?(:JSON) or
+        fail("No JSON gem found. Pleas require json parsing gem you'd like")
+      JSON.parse(text)
     end
 
     def result(hash)
@@ -91,7 +161,17 @@ module Cobb
     end
     
     def next_to(gun, url, context = {})
+      Cobb.gun?(gun) or fail(ArgumentError, "You can't fire #{gun.inspect}!")
+      
       @victim.next_order!(gun, url, context)
+    end
+    
+    def repeat(url, context = {})
+      next_to self.class, url, context
+    end
+
+    def reject!
+      fail SourceRejected
     end
   end
 end

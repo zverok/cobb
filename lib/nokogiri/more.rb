@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'nokogiri'
-require 'uri'
 require 'naught'
+require 'addressable/uri'
 
 module Nokogiri
     module More
@@ -16,20 +16,20 @@ module Nokogiri
             
             def href
                 only_for!('a[href]')
-                document.absolute(URI.escape(self['href']))
+                document.absolute(self['href'])
             end
         end
         
         module DocumentURI
             def uri
-                url ? URI.parse(url) : nil
+                url ? Addressable::URI.parse(url) : nil
             end
             
             def absolute(link)  
                 if uri
                     (uri + link).to_s
                 else
-                    URI.parse(link).to_s
+                    Addressable::URI.parse(link).to_s # double check it's really a link
                 end
             end
         end

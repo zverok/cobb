@@ -2,12 +2,14 @@
 module Cobb
   class Victim
     def initialize(gun, url)
+      @gun, @url = gun, url
+      
       @data = Mash.new
       @datum = []
       @next_orders = []
     end
     
-    attr_reader :data, :datum, :next_orders
+    attr_reader :gun, :url, :data, :datum, :next_orders
     
     def merge_data!(hash)
       current_data.merge!(hash)

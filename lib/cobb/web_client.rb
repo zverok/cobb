@@ -6,12 +6,17 @@ require 'addressable/uri'
 
 module Cobb
     class WebClient
-        include Singleton
-        
         DEFAULT_OPTIONS = {
             cache_base: 'tmp/cache',
             request_interval: 0.3,
         }
+        
+        def initialize
+            require 'typhoeus/adapters/faraday'
+            @faraday = Faraday.new{|f|
+                f.adapter :typhoeus
+            }
+        end
         
         def get(url)
             cached_get(url) || web_get(url)
@@ -34,7 +39,7 @@ module Cobb
                 sleep(to_sleep) if to_sleep > 0
             end
 
-            response = Faraday.get(url)
+            response = @faraday.get(url)
             @prev_request_time = Time.now
 
             put_to_cache(url, response.body)
