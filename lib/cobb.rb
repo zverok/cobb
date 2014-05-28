@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'rubygems'
 require 'naught'
+require 'logger'
 
 module Cobb
   class << self
@@ -32,6 +33,6 @@ end
 
 require 'cobb/mash'
 require 'cobb/gun'
+require 'cobb/target'
 require 'cobb/victim'
-require 'cobb/order'
 require 'cobb/web_client'

@@ -1,13 +1,13 @@
 # encoding: utf-8
 module Cobb
-  class Order
+  class Target
     def initialize(gun, url, context)
       @gun, @url, @context = gun, url, Mash.new(context)
     end
     
     attr_reader :gun, :url, :context
     
-    def perform!
+    def fire_at!
       gun.fire(url, context)
     end
     

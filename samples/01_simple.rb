@@ -15,5 +15,5 @@ if $0 == __FILE__
     url = 'http://www.amazon.com/Cats-Cradle-Novel-Kurt-Vonnegut/dp/038533348X/'
     victim = AmazonBook.fire(url)
     
-    p victim.data # => #<Hashie::Mash author="Kurt Vonnegut" price="$8.75" title="Cat's Cradle: A Novel">
+    p victim.result
 end

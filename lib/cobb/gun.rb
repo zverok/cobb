@@ -117,12 +117,12 @@ module Cobb
 
     def log_victim(victim)
       log.info "...#{inspect} ready"
-      if !victim.data.empty?
-        log.info "...#{inspect} data: #{victim.data.keys.join(', ')}"
-      elsif !victim.datum.empty?
-        log.info "...#{inspect} datum: #{victim.datum.count} rows"
+      if !victim.result.empty?
+        log.info "...#{inspect} result: #{victim.result.keys.join(', ')}"
+      elsif !victim.results.empty?
+        log.info "...#{inspect} results: #{victim.results.count} rows"
       end
-      stats = victim.next_orders.group_by(&:gun).map{|g, os| "#{g}: #{os.count}"}
+      stats = victim.next_targets.group_by(&:gun).map{|g, ts| "#{g}: #{ts.count}"}
       unless stats.empty?
         log.info "...#{inspect} next urls: #{stats.join(', ')}"
       end
@@ -153,7 +153,7 @@ module Cobb
     end
 
     def result(hash)
-      @victim.merge_data!(hash)
+      @victim.merge_result!(hash)
     end
     
     def result_row(hash = nil, &block)
@@ -163,7 +163,7 @@ module Cobb
     def next_to(gun, url, context = {})
       Cobb.gun?(gun) or fail(ArgumentError, "You can't fire #{gun.inspect}!")
       
-      @victim.next_order!(gun, url, context)
+      @victim.next_target!(gun, url, context)
     end
     
     def repeat(url, context = {})

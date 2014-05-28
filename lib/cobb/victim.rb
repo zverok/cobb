@@ -4,15 +4,15 @@ module Cobb
     def initialize(gun, url)
       @gun, @url = gun, url
       
-      @data = Mash.new
-      @datum = []
-      @next_orders = []
+      @result = Mash.new
+      @results = []
+      @next_targets = []
     end
     
-    attr_reader :gun, :url, :data, :datum, :next_orders
+    attr_reader :gun, :url, :result, :results, :next_targets
     
-    def merge_data!(hash)
-      current_data.merge!(hash)
+    def merge_result!(hash)
+      current_result.merge!(hash)
     end
     
     def row!(hash = nil, &block)
@@ -29,22 +29,22 @@ module Cobb
       end
     end
     
-    def next_order!(gun, url, context = {})
-      @next_orders << Order.new(gun, url, context)
+    def next_target!(gun, url, context = {})
+      @next_targets << Target.new(gun, url, context)
     end
     
     private
     
-    def current_data
-      @row_context ? current_row : data
+    def current_result
+      @row_context ? current_row : result
     end
     
     def push_row(hash = nil)
-      datum << Mash.new(hash || {})
+      results << Mash.new(hash || {})
     end
     
     def current_row
-      datum.last
+      results.last
     end
   end
 end

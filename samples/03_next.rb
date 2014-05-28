@@ -25,9 +25,9 @@ if $0 == __FILE__
     url = 'http://www.amazon.com/Kurt-Vonnegut/e/B000APYE16/'
     victim = Amazon::AuthorBooks.fire(url)
     
-    pp victim.next_orders
+    pp victim.next_targets
     
-    victim2 = victim.next_orders.first.perform!
+    victim2 = victim.next_targets.first.fire_at!
     
-    pp victim2.data
+    pp victim2.result
 end

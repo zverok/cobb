@@ -20,5 +20,5 @@ if $0 == __FILE__
     url = 'http://www.amazon.com/Kurt-Vonnegut/e/B000APYE16/'
     victim = AmazonAuthorBooks.fire(url)
     
-    pp victim.datum
+    pp victim.results
 end

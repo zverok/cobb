@@ -27,12 +27,12 @@ end
 if $0 == __FILE__
     url = 'http://www.amazon.com/Cats-Cradle-Novel-Kurt-Vonnegut/dp/038533348X/'
     victim = Amazon::Book.fire(url, author_bio: 'Sample author bio.')
-    pp victim.data
+    pp victim.result
 
     url = 'http://www.amazon.com/Kurt-Vonnegut/e/B000APYE16/'
     victim2 = Amazon::AuthorBooks.fire(url)
-    pp victim2.next_orders.first
-    victim3 = victim2.next_orders.first.perform!
+    pp victim2.next_targets.first
+    victim3 = victim2.next_targets.first.fire_at!
     
-    pp victim3.data
+    pp victim3.result
 end
