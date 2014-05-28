@@ -15,5 +15,5 @@ if $0 == __FILE__
     url = 'http://www.amazon.com/Cats-Cradle-Novel-Kurt-Vonnegut/dp/038533348X/'
     victim = AmazonBook.fire(url)
     
-    p victim.result
+    pp victim.result
 end

@@ -4,7 +4,7 @@
 
 It's named after Jane Cobb, infamous Serenity "public relation guy" from Firefly series.
 
-Some ideas (though, not the code) was taken from sinew gem.
+Some ideas (though, not the code) was taken from [sinew](https://github.com/gurgeous/sinew).
 
 ## What the funny names?
 
@@ -35,7 +35,8 @@ end
 
 victim = AmazonBook.fire 'http://www.amazon.com/Cats-Cradle-Novel-Kurt-Vonnegut/dp/038533348X/'
 
-p victim.result # => #<Cobb::Mash author="Kurt Vonnegut" price="$8.75" title="Cat's Cradle: A Novel">
+pp victim.result 
+# => {"title"=>"Cat's Cradle: A Novel", "author"=>"Kurt Vonnegut", "price"=>"$8.75"}
 ```
 
 What we see here?
@@ -97,6 +98,13 @@ end
 
 victim = AmazonAuthorBooks.fire 'http://www.amazon.com/Kurt-Vonnegut/e/B000APYE16/'
 pp victim.results
+# => [{"title"=>"Slaughterhouse-Five",
+#      "link"=>"http://www.amazon.com/Slaughterhouse-Five-Kurt-Vonnegut/dp/0440180295",
+#      "author"=>"Kurt Vonnegut"},
+#     {"title"=>"If This Isn't Nice, What Is?: Advice to the Young-The Graduation Speeches",
+#      "link"=>"http://www.amazon.com/This-Isnt-Nice-What-Graduation/dp/1609805917",
+#      "author"=>"Kurt Vonnegut"},
+#     <...and so on...>
 ```
 
 As simple as that. You call `result_row{some code}` or even 
@@ -104,9 +112,7 @@ As simple as that. You call `result_row{some code}` or even
 `victim.result`, many items - `victim.results`. Not too smart, not too
 dumb, obvious enough.
 
-## 3. Next targets
-
-**Interesting things goes from here!** 
+## 3. Next targets - interesting things goes from here!
 
 On my experience, typical real-world site scraping is like "scrape list 
 of items from this page, than follow links and scrape their description", 
@@ -136,9 +142,14 @@ end
 
 victim = Amazon::AuthorBooks.fire 'http://www.amazon.com/Kurt-Vonnegut/e/B000APYE16/'
 pp victim.next_targets
+# => [#<Cobb::Target: Amazon::Book.fire(http://www.amazon.com/Slaughterhouse-Five-Kurt-Vonnegut/dp/0440180295)>,
+#     #<Cobb::Target: Amazon::Book.fire(http://www.amazon.com/This-Isnt-Nice-What-Graduation/dp/1609805917)>,
+#     <...several of them...>
+#     #<Cobb::Target: Amazon::Book.fire(http://www.amazon.com/Suckers-Portfolio-Collection-Previously-Unpublished/dp/1611099587)>]
 
 victim2 = victim.next_targets.first.fire_at!
-p victim2.result
+pp victim2.result
+# => {"title"=>"Slaughterhouse-Five", "author"=>"Kurt Vonnegut", "price"=>"$4.83"}
 ```
 
 Highlights:
@@ -173,7 +184,11 @@ end
 
 victim = Amazon::Book.fire 'http://www.amazon.com/Cats-Cradle-Novel-Kurt-Vonnegut/dp/038533348X/', 
   author_bio: 'Sample author bio.'
-pp victim.data # => #<Cobb::Mash author="Kurt Vonnegut" price="$8.75" title="Cat's Cradle: A Novel" author_bio="Sample author bio.">
+pp victim.data 
+# => {"title"=>"Cat's Cradle: A Novel",
+#     "author"=>"Kurt Vonnegut",
+#     "price"=>"$8.75",
+#     "author_bio"=>"Sample author bio."}
 ```
 
 It don't looks too cool, until you mix it with `next_to`:
@@ -183,7 +198,6 @@ module Amazon
   class AuthorBooks < Cobb::Gun
     def mechanizm
       bio = html.at!('#artistCentralBio_officialFullBioContent').text
-      
       html.css('#mainResults .result').each do |row|
         next_to Book, row.at!('h3.title a').href, 
           author_bio: bio # here goes the context!
@@ -196,7 +210,8 @@ victim = Amazon::AuthorBooks.fire(url)
 pp victim.next_targets.first
 victim2 = victim.next_targets.first.fire_at!
 
-pp victim2.result # => book info with full author bio from author page!
+pp victim2.result 
+# => book info with full author bio from author page!
 ```
 
 Look at samples/04_context.rb for complete sample.
@@ -205,7 +220,7 @@ Look at samples/04_context.rb for complete sample.
 
 ## 6. Vera - the cutest gun ever
 
-## 7. What else Jayne Cobb does for me?
+## 7. What else Jayne Cobb does for me, if I pay enough?
 
 ### Train with your gun
 

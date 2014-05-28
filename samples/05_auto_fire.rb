@@ -2,7 +2,7 @@
 require './samples/_base'
 
 module Amazon
-    class AuthorBooks < Cobb::Gun
+    class Vonneguth < Cobb::Gun
         source 'http://www.amazon.com/Kurt-Vonnegut/e/B000APYE16/'
         
         def mechanizm
@@ -29,7 +29,7 @@ module Amazon
 end
 
 if $0 == __FILE__
-    victims = Amazon::AuthorBooks.auto_fire
+    victims = Amazon::Vonneguth.auto_fire
     pp victims.map(&:next_orders).flatten
     
     victims2 = Amazon::Book.auto_fire
