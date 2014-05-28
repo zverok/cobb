@@ -208,6 +208,12 @@ end
 
 victim = Amazon::AuthorBooks.fire(url)
 pp victim.next_targets.first
+# => #<Cobb::Target: Amazon::Book.fire(http://www.amazon.com/Slaughterhouse-Five-Kurt-Vonnegut/dp/0440180295) 
+#      with #<Cobb::Mash 
+#              author_bio="Kurt Vonnegut was born in Indianapolis in 1922. He studied at the universities of Chicago and Tennessee and later began to write short stories for magazines. His first novel, Player Piano, was published in 1951 and since then he has written many novels, among them: The Sirens of Titan (1959), Mother Night (1961), Cat's Cradle (1963), God Bless You Mr Rosewater (1964), Welcome to the Monkey House; a collection of short stories (1968), Breakfast of Champions (1973), Slapstick, or Lonesome No More (1976), Jailbird (1979), Deadeye Dick (1982), Galapagos (1985), Bluebeard (1988) and Hocus Pocus (1990). During the Second World War he was held prisoner in Germany and was present at the bombing of Dresden, an experience which provided the setting for his most famous work to date, Slaughterhouse Five (1969). He has also published a volume of autobiography entitled Palm Sunday (1981) and a collection of essays and speeches, Fates Worse Than Death (1991)."
+#            >
+#     >
+
 victim2 = victim.next_targets.first.fire_at!
 
 pp victim2.result 
