@@ -2,9 +2,13 @@
 module Cobb
   class Gun
     class << self
-      def fire(url)
-        new.fire(url)
+      def fire(url, context = {})
+        new(context).fire(url)
       end
+    end
+    
+    def initialize(context)
+      @context = Mash.new(context)
     end
     
     def fire(url)

@@ -8,7 +8,7 @@ module Cobb
     attr_reader :gun, :url, :context
     
     def perform!
-      gun.fire(url)
+      gun.fire(url, context)
     end
     
     def inspect
@@ -17,7 +17,6 @@ module Cobb
       else
         "#<#{self.class.name}: #{gun}.fire(#{url}) with #{context.inspect}>"
       end
-        
     end
   end
 end

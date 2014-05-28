@@ -4,7 +4,6 @@ require './samples/_base'
 module Amazon
     class AuthorBooks < Cobb::Gun
         def mechanizm
-            author = html.at!('#EntityName').text
             html.css('#mainResults .result').each do |row|
                 next_to Book, row.at!('h3.title a').href
             end
