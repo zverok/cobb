@@ -8,21 +8,20 @@ module Cobb
     end
   end
   
-  class SourceRejected < RuntimeError
+  class TargetRejected < RuntimeError
   end
   
   class Gun
     class << self
       # settings DSL
-      def sources(*src)
-        options.sources ||= []
-        options.sources.push(*src)
+      def targets(*src)
+        options.targets.push(*src)
       end
       
-      alias_method :source, :sources
+      alias_method :target, :targets
       
       def initial?
-        !sources.empty? && sources.all?{|s| !Cobb.gun?(s)}
+        !targets.empty? && targets.all?{|s| !Cobb.gun?(s)}
       end
       
       def samples(*)
@@ -36,13 +35,13 @@ module Cobb
       end
       
       def auto_fire(opts = {})
-        options.sources && !options.sources.empty? or
-          fail("#{inspect} has no explicitly defined sources")
+        options.targets && !options.targets.empty? or
+          fail("#{inspect} has no explicitly defined targets")
         
         max = opts.delete(:max) ||
-        make_orders(options.sources, opts[:context] || {}).
-          select{|order| order.gun == self}.
-          map(&:perform!)
+        make_targets(options.targets, opts[:context] || {}).
+          select{|target| target.gun == self}.
+          map(&:fire_at!)
       end
       
       def web_client
@@ -51,17 +50,22 @@ module Cobb
 
       private
       
+      DEFAULT_OPTIONS = {
+        targets: [],
+        samples: []
+      }
+      
       def options
-        @options ||= Mash.new
+        @options ||= Mash.new(DEFAULT_OPTIONS)
       end
       
-      def make_orders(sources, context = {})
-        sources.map{|src|
+      def make_targets(targets, context = {})
+        targets.map{|src|
           case 
           when src.kind_of?(String)
-            Order.new(self, src, context)
+            Target.new(self, src, context)
           when src.is_a?(Class) && src < Gun
-            src.auto_fire.map(&:next_orders)
+            src.auto_fire.map(&:next_targets)
           else
             fail ArgumentError, "Don't know how to fire at #{src.inspect}"
           end
@@ -85,7 +89,7 @@ module Cobb
       log_victim(@victim)
       
       @victim
-    rescue SourceRejected
+    rescue TargetRejected
       nil
     rescue => e
       fail FiringError.from(self, url, e)
@@ -171,7 +175,7 @@ module Cobb
     end
 
     def reject!
-      fail SourceRejected
+      fail TargetRejected
     end
   end
 end

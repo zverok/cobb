@@ -1,18 +1,18 @@
 # encoding: utf-8
 module Cobb
   class Vera
-    def initialize(target)
-      @target = target
-      @guns = list_guns(target)
+    def initialize(final)
+      @final = final
+      @guns = list_guns(final)
     end
     
-    attr_reader :target
+    attr_reader :final
     
     NaughtProgressBar = Naught.build
     
     def birst!(opts = {})
       @progress_bar = if opts[:progress] 
-        guarded_requre 'progress_bar'
+        Cobb.guarded_requre 'progress_bar'
         ProgressBar.new(1) 
       else
         NaughtProgressBar.new
@@ -36,7 +36,7 @@ module Cobb
         progress_bar.increment!
       end
       
-      victims.select{|v| v.gun.class == target}
+      victims.select{|v| v.gun.class == final}
     end
     
     private
@@ -54,10 +54,10 @@ module Cobb
     end
     
     def list_guns(gun)
-      !gun.sources || gun.sources.empty? and 
-        fail(ArgumentError, "#{gun} has no sources defined")
+      gun.targets.empty? and 
+        fail(ArgumentError, "#{gun} has no targets defined")
         
-      gun.sources.select{|src| src.is_a?(Class) && src < Gun}.map{|g| list_guns(g)}.flatten + [gun]
+      gun.targets.select{|t| Cobb.gun?(t)}.map{|g| list_guns(g)}.flatten + [gun]
     end
   end
 end
