@@ -24,7 +24,8 @@ module Cobb
         !targets.empty? && targets.all?{|s| !Cobb.gun?(s)}
       end
       
-      def samples(*)
+      def samples(*smpl)
+        options.samples.push(*smpl)
       end
       
       alias_method :sample, :samples
@@ -42,6 +43,13 @@ module Cobb
         make_targets(options.targets, opts[:context] || {}).
           select{|target| target.gun == self}.
           map(&:fire_at!)
+      end
+      
+      def train
+        options.samples.empty? and
+          fail("#{inspect} has no explicitly defined training samples")
+        
+        options.samples.map{|s| fire(s)}
       end
       
       def web_client
@@ -141,7 +149,7 @@ module Cobb
     attr_reader :context
     
     def html
-      require 'nokogiri'
+      Cobb.guarded_require 'nokogiri'
       require 'nokogiri/more'
       @html ||= Nokogiri::HTML(raw, url)
     end

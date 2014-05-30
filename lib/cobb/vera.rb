@@ -12,7 +12,7 @@ module Cobb
     
     def birst!(opts = {})
       @progress_bar = if opts[:progress] 
-        Cobb.guarded_requre 'progress_bar'
+        Cobb.guarded_require 'progress_bar'
         ProgressBar.new(1) 
       else
         NaughtProgressBar.new

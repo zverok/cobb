@@ -23,7 +23,9 @@ And there comes **Vera**.
 
 Deal with it. Maybe I'll change my mind in future versions.
 
-## 1. Just Gun aka "OK, let's start with something"
+## 1. Just Gun 
+
+**aka "OK, let's start with something"**
 
 The simplest usage of Cobb (also look at samples/01_simple.rb):
 
@@ -46,19 +48,23 @@ pp victim.result
 
 What we see here?
 
-1. how to define gun: just inherit from `Cobb::Gun` and define `mechanizm` 
-  method, and everything would work
-2. what you get inside `mechanizm`:
+1. How to **define** gun: 
+  - just inherit from `Cobb::Gun` 
+  - and define `mechanizm` method, and everything would work
+2. what you get **inside** `mechanizm`:
   - `html` is `Nokogiri::HTML` of the page 
     (with some `Nokogiri::More`, see below)
   - `result` is method to merge some values to result
-3. how to use gun: just do `{Gun}.fire({url})`
-4. what you obtain from gun: victim, obviously, and its `result` 
+3. How to **use** gun: 
+  - just do `{Gun}.fire({url})`
+4. What you **obtain** from gun: 
+  - victim, obviously, and its `result` 
   - it's what you `result`ed in gun. It's a "mash", descended from
   `Hashie::Mash`, so you can `result['title']` or `result.title` now.
 
-What you can't see, yet it's still here: **requests caching**. It's just 
-so-called "greedy" caching: once performed, request to some URL is never
+What you can't see, yet it's still here: **requests caching**. 
+
+It's just so-called "greedy" caching: once performed, request to some URL is never
 repeated again. You can control it just by removing `tmp/cache`, 
 and (in future) by settings and commands. But for now it seems good enough:
 you just develop some "gun" (parser), and run it as many times as you like,
@@ -112,17 +118,23 @@ pp victim.results
 #     ... and so on ...
 ```
 
-As simple as that. You call `result_row{some code}` or even 
-`result_row(some_hash)` and you have `victim.results`. One item - 
-`victim.result`, many items - `victim.results`. Not too smart, not too
-dumb, obvious enough.
+As simple as that. 
 
-## 3. Next targets. Interesting things goes from here!
+You call `result_row{some code}` or even 
+`result_row(some_hash)` and you have `victim.results`. 
+
+One item - `victim.result`, many items - `victim.results`. 
+Not too smart, not too dumb, obvious enough.
+
+## 3. Next targets. 
+
+**aka "Interesting things goes from here!"**
 
 On my experience, typical real-world site scraping is like "scrape list 
 of items from this page, than follow links and scrape their description", 
-and so on. With Cobb, you do it totally like this 
-(also look at samples/03_next.rb): 
+and so on. 
+
+With Cobb, you do it totally like this (also look at samples/03_next.rb): 
 
 ```ruby
 module Amazon
@@ -159,11 +171,12 @@ pp victim2.result
 
 Highlights:
 
-1. `next_to({Gun}, {url})` - tells victim the next target and what gun
+1. `next_to({Gun}, {url})` -- tells victim the next target and what gun
   to fire at it
-2. so, the victim has method `next_targets`, which return instances of
-  `Cobb::Target` class, knowing what gun, and what URL to fire, and
-  having method `Target#fire_at!` to fire with specified gun
+2. So, the victim has method `next_targets`, which return targets 
+  (instances of `Cobb::Target` class)
+3. Target knows what gun should fire and to which URL
+4. Target has method `Target#fire_at!` to be fired with specified gun
   (cynical enough, no? now you're in love with my namings?..)
 
 Becames cooler, nah? It's just a beginning.
@@ -231,7 +244,9 @@ pp victim2.result
 
 Look at samples/04_context.rb for complete sample.
 
-## 5. Auto-fire: don't make me think of targets!
+## 5. Auto-fire
+
+**aka "Don't make me think of targets!"**
 
 Cobb allows you to define gun target, while describing the gun.
 Like this:
@@ -300,10 +315,13 @@ You just do something like:
 Cobb::Vera.new(Amazon::Book).birst!(progress: true)
 ```
 
-And Vera does the things. She shows progress bars. She processeses cyclic
+And Vera does the things. 
+
+She shows progress bars. She processeses cyclic
 dependencies and checks every gun/url shot only once. 
-She forces all gun in gun chain to be shot. She is beautiful. She is all
-Cobb loves.
+She forces all gun in gun chain to be shot. She is beautiful. 
+
+She is all Cobb loves.
 
 Assume this:
 
@@ -324,6 +342,10 @@ class Vonneguth < Cobb::Gun
   end
 end
 
+class Book < Cobb::Gun
+  # as shown above
+end
+
 # and then, just:
 victims = Cobb::Vera.new(Amazon::Book).birst!(progress: true)
 pp victims2.map(&:result)
@@ -332,19 +354,16 @@ pp victims2.map(&:result)
 (Full sample at samples/06_vera.rb is almost like this, but considering
 some Amazon's gotchas.)
 
-This example will example ALL of Vonnegut book listing pages 
-(see at `next_to Vonnegut`), and only them extract books from them, and 
-it will be all books from all the pages (while `Book.auto_fire` will
-get you books from as least targets as it can).
+This example will:
+
+* Grab ALL of Vonnegut book listing pages (see at `next_to Vonnegut`); 
+* Then extract books from them all;
+* It will be all books from all the pages _(while `Book.auto_fire` will
+  get you books from as least targets as it can)_.
 
 Try it, I'm serious. Just give it a try.
 
-
 ## 7. What else Jayne Cobb does for me, if I pay enough?
-
-### Train with your gun
-
-### Settings
 
 ### Nokogiri::More
 
@@ -352,17 +371,43 @@ Nokogiri::More is, for now, a part of Cobb, though it will be separated
 into different gem in nearest future. It's some extensions and monkey-patches
 to Nokogiri, which makes it easier for complex production-ready parsers.
 
+#### methods with ! and ?
+
+Assume we are looking for `a.title` inside `div#intro`, and there's no
+such a link.
+
+```ruby
+div = html.at('div#intro')
+
+# Nokogiri original method, throws not very informative
+# NoMethodError: undefined method `[]' for nil:NilClass
+div.at('a.title')['href']  
+
+# Bang method: node SHOULD be here
+# Throws pretty NodeNotFound("<div> has no node at 'a.title'")
+div.at!('a.title')['href'] 
+
+# Question method: node may not be there, and it should not be considered
+# as an error.
+# Returns blackhole NullObject, which eats all further messages silently
+div.at?('a.title')['href'] 
+```
+
+### Train with your gun
+
+### Settings
+
 ### Some useful shortcuts
 
 * `repeat url [, context]` is just like `next_to` with same class (useful
   for paging and other such things);
-  so in example 6 for Vera above we could just `repeat a.href` instead of
-  `next_to Vonnegut, a.href`
-* Cobb is not only for HTML pages parsing! `raw` is already here for every
-  gun, containing raw request body, and `json` is calculated when you
-  first call it and is equivalent to `JSON.parse(raw)`, if your requests
-  are returning JSON (also, seems useful to provide `xml` alongside with
-  `html` method, though I haven't done it yet)
+  * so in example 6 for Vera above we could just `repeat a.href` instead of
+    `next_to Vonnegut, a.href`
+* Cobb is not only for HTML pages parsing! 
+  * `raw` is already here for every gun, containing raw request body
+  * `json` is calculated when you first call it and is equivalent to `JSON.parse(raw)`
+  * Also, seems useful to provide `xml` alongside with `html` method, 
+    though I haven't done it yet
 
 ## Current state of a gem
 
@@ -377,16 +422,26 @@ and renamings, so, may be broken at a moment.
 
 And the fourth hand, all examples are working.
 
-Trust the view you like more, look at the code, write your opinions at
+Trust the hand you like more, look at the code, write your opinions at
 requests to zverok.offline@gmail.com.
 
 ## TODO
 
 * Specs!!!
-* Instead of dumb custom WebClient, just use Faraday cachin middleware
+* Instead of dumb custom WebClient, just use Faraday caching middleware
   and make it customizable
 * Separate Nokogiri::More to another gem
 * More settings
 * More logs
 
 ## Requirements
+
+* naught
+* faraday
+* typhoeus
+* hashie
+* addressable/uri
+
+Soft dependencies:
+* nokogiri
+* json

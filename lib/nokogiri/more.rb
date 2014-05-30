@@ -78,7 +78,6 @@ module Nokogiri
         end
         
         NodeNaught = Naught.build do |config|
-            #config.mimic Nokogiri::XML::Node
             config.black_hole
             
             def tap # so you can just at?(selector).tap{|node| - and never be here, if it's not found

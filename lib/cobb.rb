@@ -23,7 +23,7 @@ module Cobb
       @settings ||= Mash.new
     end
     
-    def guarded_requre(gem)
+    def guarded_require(gem)
       require gem
     rescue LoadError
       fail "Can't require optional #{gem}, possibly you should add it to your Gemfile to use"
