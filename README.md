@@ -27,7 +27,7 @@ Deal with it. Maybe I'll change my mind in future versions.
 
 **aka "OK, let's start with something"**
 
-The simplest usage of Cobb (also look at samples/01_simple.rb):
+The simplest usage of Cobb (also look at [`samples/01_simple.rb`](samples/01_simple.rb)):
 
 ```ruby
 class AmazonBook < Cobb::Gun
@@ -75,7 +75,7 @@ It's pretty obivous, yet useful (on my thought), but it's just a start.
 ## 2. Array of results
 
 But what if we have several data items on page? 
-Oh, that's easy (also look at samples/02_array.rb):
+Oh, that's easy (also look at [`samples/02_array.rb`](samples/02_array.rb)):
 
 ```ruby
 class AmazonAuthorBooks < Cobb::Gun
@@ -126,7 +126,7 @@ You call `result_row{some code}` or even
 One item - `victim.result`, many items - `victim.results`. 
 Not too smart, not too dumb, obvious enough.
 
-## 3. Next targets. 
+## 3. Next targets 
 
 **aka "Interesting things goes from here!"**
 
@@ -134,7 +134,7 @@ On my experience, typical real-world site scraping is like "scrape list
 of items from this page, than follow links and scrape their description", 
 and so on. 
 
-With Cobb, you do it totally like this (also look at samples/03_next.rb): 
+With Cobb, you do it totally like this (also look at [`samples/03_next.rb`](samples/03_next.rb)): 
 
 ```ruby
 module Amazon
@@ -242,7 +242,7 @@ pp victim2.result
 #    }
 ```
 
-Look at samples/04_context.rb for complete sample.
+Look at [`samples/04_context.rb`](samples/04_context.rb) for complete sample.
 
 ## 5. Auto-fire
 
@@ -270,7 +270,7 @@ you can just:
 
 ```ruby
 victims = Amazon::Vonneguth.auto_fire # without any URL
-pp victims.map(&:next_orders).flatten
+pp victims.map(&:next_targets).flatten
 # => [#<Cobb::Target: Amazon::Book.fire(http://www.amazon.com/Slaughterhouse-Five-Kurt-Vonnegut/dp/0440180295) with #<Cobb::Mash author_bio="Kurt Vonnegut was born in Indianapolis in 1922. He studied at the universities of Chicago and Tennessee and later began to write short stories for magazines. His first novel, Player Piano, was published in 1951 and since then he has written many novels, among them: The Sirens of Titan (1959), Mother Night (1961), Cat's Cradle (1963), God Bless You Mr Rosewater (1964), Welcome to the Monkey House; a collection of short stories (1968), Breakfast of Champions (1973), Slapstick, or Lonesome No More (1976), Jailbird (1979), Deadeye Dick (1982), Galapagos (1985), Bluebeard (1988) and Hocus Pocus (1990). During the Second World War he was held prisoner in Germany and was present at the bombing of Dresden, an experience which provided the setting for his most famous work to date, Slaughterhouse Five (1969). He has also published a volume of autobiography entitled Palm Sunday (1981) and a collection of essays and speeches, Fates Worse Than Death (1991).">>,
 #     #<Cobb::Target: Amazon::Book.fire(http://www.amazon.com/This-Isnt-Nice-What-Graduation/dp/1609805917) with #<Cobb::Mash author_bio="Kurt Vonnegut was born in Indianapolis in 1922. He studied at the universities of Chicago and Tennessee and later began to write short stories for magazines. His first novel, Player Piano, was published in 1951 and since then he has written many novels, among them: The Sirens of Titan (1959), Mother Night (1961), Cat's Cradle (1963), God Bless You Mr Rosewater (1964), Welcome to the Monkey House; a collection of short stories (1968), Breakfast of Champions (1973), Slapstick, or Lonesome No More (1976), Jailbird (1979), Deadeye Dick (1982), Galapagos (1985), Bluebeard (1988) and Hocus Pocus (1990). During the Second World War he was held prisoner in Germany and was present at the bombing of Dresden, an experience which provided the setting for his most famous work to date, Slaughterhouse Five (1969). He has also published a volume of autobiography entitled Palm Sunday (1981) and a collection of essays and speeches, Fates Worse Than Death (1991).">>,
 #     ... and so on ...
@@ -295,7 +295,7 @@ In latter case, `auto_fire` would first run `Vonnegut.auto_fire`,
 which extracts from its designated URL. Then we'll process all URLs which 
 Vonnegut put in its `next_targets`.
 
-See samples/05_auto_fire.rb for full example.
+See [`samples/05_auto_fire.rb`](samples/05_auto_fire.rb) for full example.
 
 ## 6. Vera: the cutest gun ever
 
@@ -351,8 +351,8 @@ victims = Cobb::Vera.new(Amazon::Book).birst!(progress: true)
 pp victims2.map(&:result)
 ```
 
-(Full sample at samples/06_vera.rb is almost like this, but considering
-some Amazon's gotchas.)
+(Full sample at [`samples/06_vera.rb`](samples/06_vera.rb) is almost 
+like this, but considering some Amazon's gotchas.)
 
 This example will:
 
