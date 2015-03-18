@@ -1,2 +1,7 @@
 tmp
 lib/deprecated
+.bundle
+README-plan.markdown
+doc
+vendor
+Gemfile.lock

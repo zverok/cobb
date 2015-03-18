@@ -15,7 +15,7 @@ module Nokogiri
             include NodeOnlyFor
             
             def href
-                only_for!('a[href]')
+                #only_for!('a[href]')
                 document.absolute(self['href'])
             end
         end

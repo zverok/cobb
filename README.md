@@ -434,14 +434,15 @@ requests to zverok.offline@gmail.com.
 * More settings
 * More logs
 
-## Requirements
+## Dependencies
 
 * naught
 * faraday
 * typhoeus
 * hashie
-* addressable/uri
+* addressable
 
-Soft dependencies:
+Soft dependencies (Cobb will not install thouse himself):
+
 * nokogiri
 * json
